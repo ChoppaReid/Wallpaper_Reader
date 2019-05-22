@@ -37,7 +37,7 @@ WP1 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageC
 WP2 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_001").decode('latin-1')
 # Would be better to setup above code to iterate all sub keys, then work on any matching "Trans....9999" name-formats
 
-print("Var: ",WP1,"`n	`nVar2: ",WP2)
+print("BOOHOO:","Var: ",WP1,"\n	\nVar2: ",WP2)
 
 """
 
@@ -50,3 +50,54 @@ So need to understand how to convert REG Binary into normal string.
 (it's way too late to be actually doing anything on this right now) :)
 
 """
+
+
+# this one comes from: https://marc.info/?l=python-list&m=125087538012528&w=2
+
+def __get_data(root_key, key, value):
+    """This method gets the data from the given key and value under the root
+    key.
+
+    Args:
+      root_key (str): The root key as abbreviated string.
+                      Valid values: [hklm, hkcr, hkcu, hku, hkpd, hkcc].
+      key (str): The subkey starting from the root key.
+              e.g.: SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+      value (str): The value to query.
+
+    Returns:
+      Str. It returns the retrieved data, or an empty string if data could not be retrieved.
+    """
+    data = ''
+    try:
+      hkey = winreg.OpenKey(root_key, key, 0, winreg.KEY_READ)
+      data, regtype = winreg.QueryValueEx(hkey, value)
+      print("MAR:", data, regtype)
+      winreg.CloseKey(hkey)
+    except WindowsError as e:
+      logging.error('Error occurred getting registry data: {0}'.format(e))
+    return data 
+
+mygarb1 = __get_data(winreg.HKEY_CURRENT_USER,r'Control Panel\Desktop','TranscodedImageCache_000')
+mygarb2 = __get_data(winreg.HKEY_CURRENT_USER,r'Control Panel\Desktop','TranscodedImageCache_001')
+print("Here it is\n\t",mygarb1,"\n\t",mygarb2)
+
+from winreg import *
+
+hreg = ConnectRegistry(None, HKEY_CURRENT_USER)
+hkey = OpenKey(hreg, 'Control Panel\Desktop')
+accent_color_menu = QueryValueEx(hkey, 'TranscodedImageCache_000')[0]
+CloseKey(hkey)
+print("XX\n",accent_color_menu)
+
+aKey = OpenKey(hreg, 'Control Panel\Desktop')
+for i in range(1024):
+    try:
+        asubkey_name=EnumKey(aKey,i)
+        asubkey=OpenKey(aKey,asubkey_name)
+        val=QueryValueEx(asubkey, "DisplayName")
+        print("BBB",val)
+    except EnvironmentError:
+        print("OOPS")
+        break
+

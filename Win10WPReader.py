@@ -45,4 +45,8 @@ Hmm this is messy!
 How to extract the file path from the registry subkeys without all the fluff ????
 So need to understand how to convert REG Binary into normal string.
 
+
+190523 0025: Just running first sync after creating GitHub repository for this little project
+(it's way too late to be actually doing anything on this right now) :)
+
 """

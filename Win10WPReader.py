@@ -2,15 +2,34 @@
 
 Function code "regkey_value" for this experiment comes from: http://code.activestate.com/recipes/578689-get-a-value-un-windows-registry/
 
+Function code "explore"      for this experiment comes from: https://stackoverflow.com/questions/281888/open-explorer-on-a-file
+
 My GitHub: https://github.com/ChoppaReid
 My Website: https://sites.google.com/view/choppas-crypt/home/
 
+Assumptions:
+	You're using Windows 10
+	You have dual screens (although single screen appears to work also)
+	You want to know where the source files for your wallpaper displays are (not just Windows' bastardized copies)
+	I'm assuming this will only work on westernized systems, so happy to hear from anyone using other code-pages to see if it actually works.
+	
+	PS: I use TABS not SPACES
+
+NOTE: 
+	This does not OPEN a file!
+	It simply takes a file and points to it in windows explorer.
+
+	This is all written in python 3.7.3
 """
 
+import winreg																		#	handles registry stuff (in python-2 it would be _winreg)
+import subprocess																	#	used to call file-explorer open-folder/select-file
+import os																			#	python 3 OS path handling stuff
 
-import codecs
-import winreg
-import binascii
+"""
+The below example is my reg binary reader which gets the wallpaper locations from registry.
+The actual explorer file locater is "explore" function below.
+"""
 
 def regkey_value(path, name="", start_key = None):
     if isinstance(path, str):
@@ -31,73 +50,45 @@ def regkey_value(path, name="", start_key = None):
                 i += 1
             return desc[1]
 
-# example usage
-# This can be setup as iterative once I have the basic "extract from registry" functionality sorted out!
+"""
+The below example "explore" can utilize variable input.
+Will also correct path definitions when required (unix to windows)
+"""
+
+def explore(path):
+	# explorer would choke on forward slashes
+	FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
+	path = os.path.normpath(path)
+	if os.path.isdir(path):
+		subprocess.run([FILEBROWSER_PATH, path])									#	Only a folder was given, so just open the folder
+	elif os.path.isfile(path):
+		subprocess.run([FILEBROWSER_PATH, '/select,', os.path.normpath(path)])		#	here is where we tell explorer to select our file
+	return
+
+# stripRegCrud simply cleans up a reg binary key.
+# removes all NULL values and any pre/post crud in the key value
+def stripRegCrud(file):
+	file = file.replace('\00', '')													#	strip out all NULL chars
+	file = (file[(file.find(":") - 1):(file.find(r"\\"))])							#	Trim out the remaining crud from registry entry
+	return file
+
+# example usage - 'latin-1' is the generic "do all" for most "westernized" code-pages (or so I believe)
 WP1 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_000").decode('latin-1')
 WP2 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_001").decode('latin-1')
-# Would be better to setup above code to iterate all sub keys, then work on any matching "Trans....9999" name-formats
+# Would be better to iterate all sub keys, then work on any matching "Trans....9999" values
+# I'll get round to that, eventually!
 
-print("BOOHOO:","Var: ",WP1,"\n	\nVar2: ",WP2)
+WP1 = stripRegCrud(WP1)																#	Let's clean up this key value so it's usable
+WP2 = stripRegCrud(WP2)
 
-"""
+print("\n\tWallpaper 1 is: ",WP1)													#	Just showing user what they're getting
+print("\tWallpaper 2 is: ", WP2)
 
-Hmm this is messy!
-How to extract the file path from the registry subkeys without all the fluff ????
-So need to understand how to convert REG Binary into normal string.
-
-
-190523 0025: Just running first sync after creating GitHub repository for this little project
-(it's way too late to be actually doing anything on this right now) :)
+explore(WP1)																		#	Call explore function and highlight requested file
+explore(WP2)
 
 """
-
-
-# this one comes from: https://marc.info/?l=python-list&m=125087538012528&w=2
-
-def __get_data(root_key, key, value):
-    """This method gets the data from the given key and value under the root
-    key.
-
-    Args:
-      root_key (str): The root key as abbreviated string.
-                      Valid values: [hklm, hkcr, hkcu, hku, hkpd, hkcc].
-      key (str): The subkey starting from the root key.
-              e.g.: SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
-      value (str): The value to query.
-
-    Returns:
-      Str. It returns the retrieved data, or an empty string if data could not be retrieved.
-    """
-    data = ''
-    try:
-      hkey = winreg.OpenKey(root_key, key, 0, winreg.KEY_READ)
-      data, regtype = winreg.QueryValueEx(hkey, value)
-      print("MAR:", data, regtype)
-      winreg.CloseKey(hkey)
-    except WindowsError as e:
-      logging.error('Error occurred getting registry data: {0}'.format(e))
-    return data 
-
-mygarb1 = __get_data(winreg.HKEY_CURRENT_USER,r'Control Panel\Desktop','TranscodedImageCache_000')
-mygarb2 = __get_data(winreg.HKEY_CURRENT_USER,r'Control Panel\Desktop','TranscodedImageCache_001')
-print("Here it is\n\t",mygarb1,"\n\t",mygarb2)
-
-from winreg import *
-
-hreg = ConnectRegistry(None, HKEY_CURRENT_USER)
-hkey = OpenKey(hreg, 'Control Panel\Desktop')
-accent_color_menu = QueryValueEx(hkey, 'TranscodedImageCache_000')[0]
-CloseKey(hkey)
-print("XX\n",accent_color_menu)
-
-aKey = OpenKey(hreg, 'Control Panel\Desktop')
-for i in range(1024):
-    try:
-        asubkey_name=EnumKey(aKey,i)
-        asubkey=OpenKey(aKey,asubkey_name)
-        val=QueryValueEx(asubkey, "DisplayName")
-        print("BBB",val)
-    except EnvironmentError:
-        print("OOPS")
-        break
-
+The below example is primitive, can only utilize fixed strings.
+Hence being moved into a comment (The other example above is FAR superior)
+"""
+#subprocess.Popen(r'explorer /select,"C:\Users\Mark Reid\Pictures\Wallpapers\44f6e5ak3315cee8aae7334.jpg"')

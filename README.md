@@ -1,7 +1,7 @@
 # Wallpaper Reader
 My first attempt at building a Python program to identify wallpaper files used in Windows 10 (via the registry)
 ## Background
-I know there are hundreds of examples of this one the web, but so far I am not finding any simple, clean-cut versions.
+I know there are hundreds of examples of this on the web, but so far I am not finding any simple, clean-cut versions.
 I've decided to experiment with the many found to try and build a simple, easy app to identify the wallpaper files assigned to each monitor on a desktop. This is more for "self-development" than anything else.
 ## My Background
 I've been playing in programming for more than 20 years now, but have only just recently decided to get back in to it, hence this and hopefully future projects.

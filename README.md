@@ -8,3 +8,7 @@ I've been playing in programming for more than 20 years now, but have only just 
 I have previously programmed in several different languages but now have decided to focus on more "recent" languages such as Python and GoLang, to go alongside my scripting and other specialties.
 ## Help and anything else
 I am happy for anyone to offer suggestions on this and other projects as I create them, as that is the whole point of going public (or so I believe). So everyone can improve and share.
+## Completion
+I have finally completed this little experiment. 
+I can now identify wallpaper source files from the registry, and then point Windows-Explorer to them for the user!
+One day I might even work out how to make it non-platform specific, but for now, I am happy with what I have achieved.

@@ -68,8 +68,9 @@ def explore(path):
 # stripRegCrud simply cleans up a reg binary key.
 # removes all NULL values and any pre/post crud in the key value
 def stripRegCrud(file):
+	crud = ':\\'																	#	Search for a "drive like" representation eg: ":\"
 	file = file.replace('\00', '')													#	strip out all NULL chars
-	file = (file[(file.find(":") - 1):(file.find(r"\\"))])							#	Trim out the remaining crud from registry entry
+	file = (file[(file.find(crud) - 1):(file.find(r"\\"))])							#	Trim out the remaining crud from registry entry
 	return file
 
 # example usage - 'latin-1' is the generic "do all" for most "westernized" code-pages (or so I believe)

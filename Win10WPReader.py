@@ -74,19 +74,26 @@ def stripRegCrud(file):
 	return file
 
 # example usage - 'latin-1' is the generic "do all" for most "westernized" code-pages (or so I believe)
-WP1 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_000").decode('latin-1')
-WP2 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_001").decode('latin-1')
+WP0 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_000").decode('latin-1')
+WP1 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_001").decode('latin-1')
+WP3 = regkey_value(r"HKEY_CURRENT_USER\Control Panel\Desktop", "TranscodedImageCache_003").decode('latin-1')
+
 # Would be better to iterate all sub keys, then work on any matching "Trans....9999" values
 # I'll get round to that, eventually!
+# Originally this app looked for WP1 and WP2, but for some reason windows now floating between WP0/1/3 ?????
+# **** iteration is the answer for this issue ****
 
-WP1 = stripRegCrud(WP1)																#	Let's clean up this key value so it's usable
-WP2 = stripRegCrud(WP2)
+WP0 = stripRegCrud(WP0)																#	Let's clean up this key value so it's usable
+WP1 = stripRegCrud(WP1)
+WP3 = stripRegCrud(WP3)
 
-print("\n\tWallpaper 1 is: ",WP1)													#	Just showing user what they're getting
-print("\tWallpaper 2 is: ", WP2)
+print("\n\tWallpaper 0 is: ",WP0)													#	Just showing user what they're getting
+print("\tWallpaper 1 is: ", WP1)
+print("\tWallpaper 3 is: ", WP3)
 
-explore(WP1)																		#	Call explore function and highlight requested file
-explore(WP2)
+explore(WP0)																		#	Call explore function and highlight requested file
+explore(WP1)
+explore(WP3)
 
 """
 The below example is primitive, can only utilize fixed strings.
